@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta name="keywords" content="document, tracker," /> 
+		<meta name="description" content="Platform to share and track documents"/> 
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="author" content="okorocelestine@gmail" />
+		<title> Document Tracker</title>
+		<link rel="stylesheet" type="text/css" href="../static/signup.css">
+		<script type="text/javascript" src="../routes/user.js" ></script>
+		
+	</head>
+	<body >
+	   <div class="header">
+	   		<div class="logo">
+				<p style="margin:0px;"> dt </p>
+	   		</div>
+
+	   		<div class="title">
+					Document Tracker
+	   		</div>
+
+	   	
+			<hr style="width:900px; margin-left:180px" />
+			
+			
+
+	   </div>
+	  
+	  <div class="content">
+	  
+	  	<form>
+
+	  	<fieldset class="signup">
+	  		<legend style="font-size:20px"> Sign Up </legend>
+	  		<p id="result" >  </p>
+	  		<p><input type="text" id="fname" class="signuptxt" placeholder="Last Name" required /> </p> <br />
+	  		<p><input type="text" id="lname" class="signuptxt" placeholder="First Name" required /> </p> <br />
+	  		<p><input type="text" id="username" class="signuptxt" placeholder="Username" required /> </p> <br />
+	  		<p><input type="password" id="pasword" class="signuptxt" placeholder="Password" required /> </p> <br />
+	  		<p><input type="text" id="email" class="signuptxt" placeholder="Email" required /> </p> <br />
+	  		<p><input type="text" id="department" class="signuptxt" placeholder="Department" required /> </p> <br />
+	  		<p> Describe yourself here... &nbsp; 
+	  			<textarea id="bio" cols="85" rows="5" class="biotxt"  placeholder="Describe yourself here...">  </textarea>  
+	  		</p> <br />
+	  		<p> <button type="button" style="width:70px;margin-left:500px; height:20px" onclick="createUser();" >Sign Up</button>  </p>
+	  	</fieldset>	
+
+	 
+	 	</form>
+	 </div>
+
+	</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta name="keywords" content="document, tracker," /> 
+		<meta name="description" content="Platform to share and track documents"/> 
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="author" content="okorocelestine@gmail" />
+		<title> Document Tracker</title>
+		<link rel="stylesheet" type="text/css" href="/css/main.css">
+
+		<script type="text/javascript">
+		
+	
+	  	/**
+	  	 function to load tags and department
+			function loadDB() {
+				var deptRef = firedb.database().ref('trackdoc/department');
+				var depts;
+				var lstDept = document.getElementById("depts");
+				// fetch department
+				 deptRef.on('value',function(snapshot) {
+				 	 depts = snapshot.val();
+				 	 for (var i=0; i<depts.length;i++) {
+				 	 	var curListitem = document.createElement("option");
+						curListitem.value = depts[i].id;
+						curListitem.text = depts[i].name;
+						lstDept.add(curListitem);
+					 }
+				 	
+				 })
+			}
+		**/
+		</script>
+	</head>
+	<body >
+	    <div class="header">
+	   		<div class="logo">
+				<p style="margin:0px;"> dt </p>
+	   		</div>
+
+	   		<div class="title">
+					Document Tracker
+	   		</div>
+
+	   		
+			<hr style="width:900px; margin-left:180px" />
+			
+			
+			<div class="menu">
+				<a href="/search" > Search  </a>&nbsp;
+				<a href="/tag" > Tag  </a>&nbsp;
+				<a href="/department" > Department  </a>&nbsp;
+				<a href="/people" > people  </a>&nbsp;
+				<a href="/share" style="font-size: 25px"> Share  </a>&nbsp;
+				<a href="/signout" > Sign Out  </a>&nbsp;
+			</div>
+	   	</div>
+
+	   	
+			<div class="share" >
+				<form   method="post" action="/share" >
+					<p class="share-head"> Share Document	</p>
+					<p id="result" > </p>
+					<p> <input type="text"  name="title" class="txttitle" placeholder="Enter a title" required/></p>
+					<p> <input type="text"  name="docurl" class="txttitle" placeholder="Paste url " required/></p>
+					<!--
+					<p>	 <input type="file" id="docs" multiple/> </p> 
+					 to implement smart Ui,later
+					<div class="tag-list">
+					  tag-list
+					</div>
+
+					<p><input type="text" id="texttag" class="txttitle" placeholder="Tags" /> </p>
+					<div class="department-list">
+					</div>
+					<p><input type="text" id="textdept" class="txttitle" placeholder="Department" /> </p>
+					-->
+					<p>	<input type="text"  name="keywords" class="txttitle" placeholder="Enter keywords -sales,business"  required/> </p>
+					<fieldset style="width:200px;padding-left:20px">
+						<legend> Concerned Department </legend> 
+						<input type="checkbox" name="key1" value="Finance"> Finance<br>
+						<input type="checkbox" name="key2" value="Operations">Operations<br>
+						<input type="checkbox" name="key3" value="Marketing">Marketing<br>
+						<input type="checkbox" name="key4" value="Recruitment">Recruitment<br>
+						<input type="checkbox" name="key5" value="Sales">Sales<br>
+						<input type="checkbox" name="key6" value="Success">Success<br>
+						<input type="checkbox" name="key7" value="Training">Training<br>
+
+
+
+					</fieldset>	
+					<br />
+					<!--
+					<p>	<select id="depts" multiple style="width:95%;padding:2px"> </select> 	<p>
+					-->
+						<button type="submit" style="float:right;font-size:20px"  id="share">Share </button>	 
+					</p>
+				</form>
+			</div>
+
+	<!-- firebase reference -->
+		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-messaging.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-storage.js"></script>
+	
+
+	<script>
+	//firebase storage setup
+	 var config = {
+            apiKey: "AIzaSyBQ2swuVnEBW4PHKGNXYKLs6ussitWlDTk",
+            authDomain: "trackdoc-ad797.firebaseapp.com",
+            databaseURL: "https://trackdoc-ad797.firebaseio.com",
+            storageBucket: "trackdoc-ad797.appspot.com",
+            messagingSenderId: "178755390087"
+          };
+	  	var firedb =firebase.initializeApp(config);
+
+	    
+		function upload() {
+			
+			var uploadUrl = document.getElementById('docurl').value,
+				keywords = document.getElementById('keywords').value,
+				dept = '',
+				deptStart=0;
+
+			// get the department
+			 for (var i =1 ; i<8; i++) {
+			 	var deptid = 'key' + i.toString();
+			 	//console.log(deptid)
+			 	if (document.getElementById(deptid).checked) {
+
+			 		if ( deptStart == 0) {
+			 			dept = document.getElementById(deptid).value.toString();
+			 		} else {
+			 			dept += ',' + document.getElementById(deptid).value.toString();
+			 		}
+			 		
+			 		deptStart++;
+			 	}
+			 }
+			 console.log(dept);
+
+			 //check if no dept was selected
+
+			 if( dept == '') {
+			 		document.getElementById('result').innerHTML = 'you must select at least one department';
+			 } else {
+
+			 	//push share
+			 	var date = new Date(),
+					uid = firedb.auth().currentUser.uid,
+					//firebase database
+					shareRef = firedb.database().ref('trackdoc/shared'),
+					newshare = {
+						"dateReg" : date,
+					    "departments" : dept,
+					    "sharedBy" : uid,
+					    "tags" : keywords,
+					    "title" : uploadUrl
+					};
+				console.log(newshare);
+				//shareRef.push(newshare);
+
+			 }
+
+			
+			/** function for upload
+
+			if (document.getElementById('docs').files) {
+				// Get a reference to the storage service
+		  		var storage = firebase.storage();
+		  		// Create a storage reference from to  storage service
+				var storageRef = storage.ref();
+				var shareDocRef = storageRef.child('sharedDoc');
+			  // Get the selected files from the input.
+				var fileSelect = document.getElementById('docs');
+				var files = fileSelect.files;
+				var curFileName;
+				var curFileRef;
+				var curFile;
+				var countTense;
+				// Loop through each of the selected files.uploadButton.innerHTML = 'Upload';
+				for (var i = 0; i <= files.length; i++) {
+
+					var curFile = files[i];
+					console.log(            )
+					var curFileName = curFile.name;
+					curFileRef = shareDocRef.child(curFileName);
+
+					curFileRef.put(files[i]).then(function(snapshot) {
+						if (i == 0) {
+							uploadUrl = curFile.name ;
+						} else {
+							uploadUrl += ',' + curFile.name;
+						}
+					  countTense = (i<1)?'':'s';
+					  document.getElementById('result').innerHTML =  'Sharing ' + (i+1) + 'file' + countTense;
+					})
+					.catch(function(error)
+					{
+					    // Handle Errors here.
+					     errorCode = error.code;
+					     errorMessage = error.message;
+					     console.log('errorCode = ' + errorCode + ', errorMessage= ' + errorMessage);
+					    // ...
+					  });
+					if ( i == (files.length-1) ) {
+						document.getElementById('result').innerHTML = mainhead + 'Done'; 
+						window.location.href = '../views/index.html'; 
+					}
+
+				}
+
+			} 
+
+			if (document.getElementById('title').value) {
+
+				if (uploadUrl) {
+					uploadUrl = document.getElementById('title').value;
+				} else {
+					uploadUrl += ',' + document.getElementById('title').value;
+				}
+
+			}
+
+			if(uploadUrl) {
+				var date = new date(),
+					uid = firebase.auth().currentUser.uid,
+					title = uploadUrl,
+					department = document.getElementById('depts') ,
+					deptid= '';
+					tags = document.getElementById('tag').value;
+
+				 for (x=0;x<=department.length;x++)
+		         {
+		            if (department[x].selected)
+		            {
+		             //alert(InvForm.SelBranch[x].value);
+		             if (deptid == '' ) {
+		             	deptid = department[x].value;
+		             } else {
+		             	deptid += department[x].value;
+		             }
+		            }
+		         }
+
+				//firebase database
+				var shareRef = firedb.database().ref('trackdoc/shared');
+				var newshare = 
+				{
+					"dateReg" : date,
+				      "departments" : deptid,
+				      "sharedBy" : uid,
+				      "tags" : tags,
+				      "title" : uploadUrl
+				}
+				shareRef.push(newshare);
+
+			} else{
+
+				document.getElementById('result').innerHTML = 'No file or url to share';
+
+			}
+
+			console.log(newshare);
+			**/
+		}
+		
+		
+	</script>
+		
+	</body>
+</html>-
